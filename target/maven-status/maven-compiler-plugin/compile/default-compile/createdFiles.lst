@@ -1,0 +1,8 @@
+com\example\photo\PhotoController.class
+com\example\photo\AnalyzePhotos.class
+com\example\photo\SendMessages.class
+com\example\photo\S3Service.class
+com\example\photo\PhotoApplication.class
+com\example\photo\WriteExcel.class
+com\example\photo\BucketItem.class
+com\example\photo\WorkItem.class

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link
+    rel="icon"
+    href="../public/images/favicon-16x16.png"
+    th:href="@{/images/favicon-16x16.png}"
+  />
+
+  <link
+    rel="apple-touch-icon"
+    href="../public/images/apple-touch-icon.png"
+    th:href="@{/images/apple-touch-icon.png}"
+  />
+
+    <script th:src="|https://code.jquery.com/jquery-1.12.4.min.js|"></script>
+    <script th:src="|https://code.jquery.com/ui/1.11.4/jquery-ui.min.js|"></script>
+    <script th:src="|https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js|"></script>
+    <script src="../public/js/items.js" th:src="@{/js/items.js}"></script>
+
+    <link rel="stylesheet" th:href="|https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.css|"/>
+    <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
+    <link rel="icon" href="../public/images/favicon.ico" th:href="@{/images/favicon.ico}" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+      crossorigin="anonymous"
+    />
+
+
+    <title>AWS Photo Analyzer</title>
+
+    <script>
+        function myFunction() {
+            alert("The form was submitted");
+        }
+    </script>
+
+</head>
+
+<body>
+<header th:replace="layout :: site-header"/>
+
+<div class="container">
+
+<h2 class="fs-5">AWS Photo Analyzer Application</h2>
+<p class="fs-4">Upload images to an S3 Bucket. Each image will be analysed!</p>
+
+<form method="POST" onsubmit="myFunction()" action="/upload" enctype="multipart/form-data">
+    <input type="file" name="file" /><br/><br/>
+    <input type="submit" value="Submit" />
+</form>
+
+<div>
+    <br>
+
+    <p>Click the following button to determine the number of images in the bucket</p>
+
+    <button onclick="getImages()">Get Images</button>
+    <table id="myTable" class="table table-hover table-sm" style="width:100%">
+        <thead class="table-dark">
+        <tr>
+            <th>Name</th>
+            <th>Owner</th>
+            <th>Date</th>
+            <th>Size</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>No Data</td>
+            <td>No Data</td>
+            <td>No Data </td>
+            <td>No Data</td>
+        </tr>
+        </tbody>
+        <!-- <tfoot>
+        <tr>
+            <th>Name</th>
+            <th>Owner</th>
+            <th>Date</th>
+            <th>Size</th>
+        </tr>
+        </tfoot> -->
+        <div id="success3"></div>
+    </table>
+
+</div>
+</div>
+</body>
+</html>
