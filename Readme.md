@@ -1,56 +1,71 @@
-#  Creating an example AWS photo analyzer application using the AWS SDK for Java
-
-You can create an AWS application that analyzes nature images located in an Amazon Simple Storage Service (Amazon S3) bucket by using the Amazon Rekognition service.
+#  Creating an photo analyzer application using the AWS SDK
+We created an AWS application that analyzes images located in an Amazon Simple Storage Service (Amazon S3) bucket by using the Amazon Rekognition service.
 
 The application can analyze many images and generate a report that breaks down each image into a series of labels.
 
-For example, the following image shows a lake.
+For example, the following image is a picture of a road.
 
-![AWS Photo Analyzer](images/Lake1.png)
+![AWS Photo Analyzer](images/test.jpg)
 
 After the application analyzes this image, it creates this data:
-*	Panoramic - 99.99971
-*	Outdoors - 99.99971
-*	Nature - 99.99971
-*	Landscape - 99.99971
-*	Scenery	 - 99.99971
-*	Wilderness - 96.90007
-*	Water - 93.501465
-*	Lake - 87.28128
+*	Car - 98.8 %
+*	Automobile - 98.8 %
+*	Vehicle - 98.8 %
+*	Transportation - 98.8 %
+*	Person - 98.3 %
+*	Human - 98.3 %
+*	Pedestrian - 97.1 %
+*	Skateboard - 94.3 %
+*	Sport - 94.3 %
+*	Sports - 94.3 %
+*	Road - 92.4 %
+*	Wheel - 90.8 %
+*	Machine - 90.8 %
+*	Path - 90.7 %
+*	Downtown - 89.8 %
+*	City - 89.8 %
+*	Urban - 89.8 %
+*	Building - 89.8 %
+*	Town - 89.8 %
+*	Tarmac - 86.1 %
+*	A*	sphalt - 86.1 %
+*	Parking Lot - 85.4 %
+*	Parking - 85.4 %
+*	Intersection - 84.8 %
+*	Architecture - 80.8 %
 
-In addition, this application uses Amazon Simple Email Service (Amazon SES) to send a report to a given email recipient. In this tutorial, you create a Spring Boot application named **AWS Photo Analyzer**. The Spring Boot APIs are used to build a model, different views, and a controller. For more information, see [Spring Boot - Securing Web Applications](https://www.tutorialspoint.com/spring_boot/spring_boot_securing_web_applications.htm).
+
+In addition, this application uses Amazon Simple Email Service (Amazon SES) to send a report to a given email recipient. In this tutorial, we created a Spring Boot application named **Photo Analyzer**. The Spring Boot APIs are used to build a model, different views, and a controller. For more information, see [Spring Boot - Securing Web Applications](https://www.tutorialspoint.com/spring_boot/spring_boot_securing_web_applications.htm).
 
 This application uses the following AWS services:
 *	Amazon Rekognition
 *	Amazon S3
 *	Amazon SES
-*	AWS Elastic Beanstalk
+*	AWS Elastic Beanstalk (if deploying on AWS)
 
-**Cost to complete:** The AWS services included in this document are included in the [AWS Free Tier](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc).
-
-**Note:** Be sure to terminate all of the resources you create while going through this tutorial to ensure that you’re no longer charged for them.
+**Note:** Be sure to terminate all of the resources created while going through this tutorial to ensure that you’re no longer charged for them.
 
 #### Topics
 
 + Prerequisites
 + Understand the AWS Photo Analyzer application
-+ Create an IntelliJ project named SpringPhotoAnalyzer
-+ Add the POM dependencies to your project
++ Create an VSCode project named PhotoAnlyser
++ Add the POM dependencies to the project with help of maven
 + Create the Java classes
 + Create the HTML files
 + Create the script files
 + Package the project into a JAR file
-+ Deploy the application to AWS Elastic Beanstalk
++ Deploy the application to AWS Elastic Beanstalk or locally
 
 ## Prerequisites
 
 To complete the tutorial, you need the following:
 
 + An AWS account
-+ A Java IDE (this tutorial uses the IntelliJ IDE)
++ A Java IDE or any Code Editor (I have used VSCode in this project)
 + Java JDK 1.8
 + Maven 3.6 or later
-+ An Amazon S3 bucket named **photos[somevalue]**. Be sure to use this bucket name in your Amazon S3 Java code. For information, see [Creating a bucket](https://docs.aws.amazon.com/AmazonS3/latest/gsg/CreatingABucket.html).
++ An Amazon S3 bucket
 
 ## Understand the AWS Photo Analyzer application
 
@@ -62,18 +77,11 @@ To generate a report, enter an email address and choose **Analyze Photos**.
 
 ![AWS Photo Analyzer](images/photo2.png)
 
-## Create an IntelliJ project named SpringPhotoAnalyzer
-
-1. In the IntelliJ IDE, choose **File**, **New**, **Project**.
-2. In the **New Project** dialog box, choose **Maven**, and then choose **Next**.
-3. For **GroupId**, enter **aws-spring**.
-4. For **ArtifactId**, enter **SpringPhotoAnalyzer**.
-6. Choose **Next**.
-7. Choose **Finish**.
+## Create an VSC project named PhotoAnalyser
 
 ## Add the POM dependencies to your project
 
-At this point, you have a new project named **SpringPhotoAnalyzer**.
+At this point, you have a new project 
 
 ![AWS Photo Analyzer](images/photo3.png)
 
@@ -288,8 +296,7 @@ The following Java code represents the **AnalyzePhotos** class. This class uses 
      }
     }
 
-**Note:** In this example, an **EnvironmentVariableCredentialsProvider** is used for the credentials. This is because this application is deployed to Elastic Beanstalk where environment variables are set (shown later in this tutorial).
-
+**Note:** In this example, an **EnvironmentVariableCredentialsProvider** is used for the credentials. This is because this application may be deployed to Elastic Beanstalk where environment variables are set.
 ### BucketItem class
 
 The following Java code represents the **BucketItem** class that stores S3 object data.
@@ -407,7 +414,7 @@ The following Java code represents the **PhotoController** class that handles HT
     @ResponseBody
     String getImages(HttpServletRequest request, HttpServletResponse response) {
 
-    return s3Client.ListAllObjects("scottphoto");
+    return s3Client.ListAllObjects("[Bucket_Name]");
     }
 
     // Generate a report that analyzes photos in a given bucket
@@ -418,7 +425,7 @@ The following Java code represents the **PhotoController** class that handles HT
         String email = request.getParameter("email");
 
        // Get a list of key names in the given bucket
-       List myKeys =  s3Client.ListBucketObjects("scottphoto");
+       List myKeys =  s3Client.ListBucketObjects("Bucket_Name");
 
        // Create a list to store the data
        List myList = new ArrayList<List>();
@@ -428,7 +435,7 @@ The following Java code represents the **PhotoController** class that handles HT
        for (int z=0 ; z < len; z++) {
 
            String key = (String) myKeys.get(z);
-           byte[] keyData = s3Client.getObjectBytes ("scottphoto", key);
+           byte[] keyData = s3Client.getObjectBytes ("Bucket_Name", key);
            //myMap.put(key, keyData);
 
            // Analyze the photo
@@ -462,7 +469,7 @@ The following Java code represents the **PhotoController** class that handles HT
             String name =  file.getOriginalFilename() ;
 
            // Put the file into the bucket
-            s3Client.putObject(bytes, "scottphoto", name);
+            s3Client.putObject(bytes, "Bucket_Name", name);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -1080,41 +1087,265 @@ The **index.html** file is the application's home view. The **process.html** fil
 The following HTML represents the **index.html** file.
 
     <!DOCTYPE html>
-    <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-
+    <html
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+    >
     <head>
-     <meta charset="utf-8" />
-     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-     <meta name="viewport" content="width=device-width, initial-scale=1" />
-     <link rel="stylesheet" th:href="|https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css|"/>
-     <script th:src="|https://code.jquery.com/jquery-1.12.4.min.js|"></script>
-     <script th:src="|https://code.jquery.com/ui/1.11.4/jquery-ui.min.js|"></script>
-     <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
-     <link rel="icon" href="../public/images/favicon.ico" th:href="@{/images/favicon.ico}" />
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>AWS Photo Analyzer</title>
+        <script th:src="|https://code.jquery.com/jquery-1.12.4.min.js|"></script>
+        <script
+        th:src="|https://code.jquery.com/ui/1.11.4/jquery-ui.min.js|"
+        ></script>
+        <link
+        rel="icon"
+        href="../public/images/favicon-16x16.png"
+        th:href="@{/images/favicon-16x16.png}"
+        />
+        <link
+        rel="apple-touch-icon"
+        href="../public/images/apple-touch-icon.png"
+        th:href="@{/images/apple-touch-icon.png}"
+        />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+        <link href="../public/css/style.css" 
+        rel="stylesheet" 
+        th:href="@{/css/style.css}"
+        />
+        <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+        crossorigin="anonymous"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" 
+        crossorigin="anonymous">
+    </script>
+        <title>Photo Analyzer</title>
     </head>
     <body>
-    <header th:replace="layout :: site-header"/>
+        <header th:replace="layout :: site-header" />
+        <!-- ======= Hero Section ======= -->
+    <section id="hero" class="hero d-flex align-items-center">
+
     <div class="container">
-
-    <h2>AWS Photo Analyzer application</h2>
-
-    <p>The AWS Photo Analyzer application is an example application that uses the Amazon Rekognition service and other AWS services, and the AWS SDK for Java version 2.
-        Analyzing nature photographs has never been easier! Just perform these steps:<p>
-
-    <ol>
-        <li>Upload a nature photograph to an Amazon S3 bucket by choosing the <b>Upload Photos</b> menu item.</li>
-        <li>Choose <b>Choose File</b> and browse to a nature image located on your desktop.</li>
-        <li>Choose <b>Upload</b> to upload your image to an S3 bucket.</li>
-        <li>Choose <b>Get Images</b> to view the images located in the S3 bucket. All images in the bucket are displayed in the table. </li>
-        <li>Analyze the photographs and produce a report by choosing the <b>Analyze Photos</b> menu item. </li>
-        <li>Enter an email address in the email field and choose <b>Analyze Photos</b>.  </li>
-        <li>Amazon SES is used to send an email with an Excel report to the specified email recipient.</li>
-    </ol>
+        <div class="row">
+        <div class="col-lg-6 d-flex flex-column justify-content-center">
+            <h1 data-aos="fade-up">We offer modern AI solutions</h1>
+            <h2 data-aos="fade-up" data-aos-delay="400">We are team of talented developers providing service to you</h2>
+            <div data-aos="fade-up" data-aos-delay="600">
+            <div class="text-center text-lg-start">
+                <a href="#about" class="btn-get-started scrollto d-inline-flex align-items-center justify-content-center align-self-center">
+                <span>Get Started</span>
+                <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            </div>
+        </div>
+        <div class="col-lg-6 hero-img" data-aos="zoom-out" data-aos-delay="200">
+            <img src="images/hero-img.png" class="img-fluid" alt="">
+        </div>
+        </div>
     </div>
+
+    </section><!-- End Hero -->
+
+    <main id="main">
+    <!-- ======= About Section ======= -->
+    <section id="about" class="about">
+
+        <div class="container" data-aos="fade-up">
+        <div class="row gx-0">
+
+            <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
+            <div class="content">
+                <h3>What is this website for?</h3>
+                <h2>On this website you can detect various objects in a image</h2>
+                <p>
+                You can detect multiple objects and scenes with different accuracy scores. You don't require any coding skills, all is taken care in the background.
+                </p>
+                <div class="text-center text-lg-start">
+                <a href="#" class="btn-read-more d-inline-flex align-items-center justify-content-center align-self-center">
+                    <span>Read More</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+                </div>
+            </div>
+            </div>
+
+            <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
+            <img src="images/about.jpg" class="img-fluid" alt="">
+            </div>
+        </div>
+        </div>
+    </section><!-- End About Section -->
+
+    <!-- ======= F.A.Q Section ======= -->
+    <section id="faq" class="faq">
+
+        <div class="container" data-aos="fade-up">
+
+        <header class="section-header">
+            <h2>F.A.Q</h2>
+            <p>Frequently Asked Questions</p>
+        </header>
+
+        <div class="row">
+            <div class="col-lg-6">
+            <!-- F.A.Q List 1-->
+            <div class="accordion accordion-flush" id="faqlist1">
+                <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-content-1">
+                    What can this App Do?
+                    </button>
+                </h2>
+                <div id="faq-content-1" class="accordion-collapse collapse" data-bs-parent="#faqlist1">
+                    <div class="accordion-body">
+                    You can identify various objects in an image and details will be mailed to you.
+                    </div>
+                </div>
+                </div>
+
+                <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-content-3">
+                    What type of images can I use?
+                    </button>
+                </h2>
+                <div id="faq-content-3" class="accordion-collapse collapse" data-bs-parent="#faqlist1">
+                    <div class="accordion-body">
+                    All normal supported image formats can be used. Please avoid gif, svg or similar formats.
+                    </div>
+                </div>
+                </div>
+
+            </div>
+            </div>
+
+            <div class="col-lg-6">
+
+            <!-- F.A.Q List 2-->
+            <div class="accordion accordion-flush" id="faqlist2">
+
+                <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2-content-1">
+                    Is it free to use?
+                    </button>
+                </h2>
+                <div id="faq2-content-1" class="accordion-collapse collapse" data-bs-parent="#faqlist2">
+                    <div class="accordion-body">
+                    Yes, currently we are providing free service but it's for a limited period of time
+                    </div>
+                </div>
+                </div>
+
+                <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2-content-3">
+                    How to generate report?
+                    </button>
+                </h2>
+                <div id="faq2-content-3" class="accordion-collapse collapse" data-bs-parent="#faqlist2">
+                    <div class="accordion-body">
+                    You just need to click on UPLOAD PHOTO, upload your photo there and then click on analyze photo, enter your email address. Report will be mailed to you in 2-3 minutes.
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </section><!-- End F.A.Q Section -->
+
+        <!-- ======= Contact Section ======= -->
+        <section id="contact" class="contact">
+
+            <div class="container" data-aos="fade-up">
+    
+            <header class="section-header">
+                <h2>Contact</h2>
+                <p>Contact Us</p>
+            </header>
+    
+            <div class="row gy-4">
+    
+                <div class="col-lg-6">
+    
+                <div class="row gy-4">
+                    <div class="col-md-6">
+                    <div class="info-box">
+                        <i class="bi bi-geo-alt"></i>
+                        <h3>Address</h3>
+                        <p>127.0.0.0</p>
+                    </div>
+                    </div>
+                    <div class="col-md-6">
+                    <div class="info-box">
+                        <i class="bi bi-telephone"></i>
+                        <h3>Call Us</h3>
+                        <p>+91 xxx xxx xxxx<br>+91 xxx xxx xxxx</p>
+                    </div>
+                    </div>
+                    <div class="col-md-6">
+                    <div class="info-box">
+                        <i class="bi bi-envelope"></i>
+                        <h3>Email Us</h3>
+                        <p>rajnishkumar.21910644@viit.ac.in<br>contact@example.com</p>
+                    </div>
+                    </div>
+                    <div class="col-md-6">
+                    <div class="info-box">
+                        <i class="bi bi-clock"></i>
+                        <h3>Open Hours</h3>
+                        <p>Monday-Sunday<br>0000 hours - 2359 hours</p>
+                    </div>
+                    </div>
+                </div>
+    
+                </div>
+    
+                <div class="col-lg-6">
+                <form action="forms/contact.php" method="post" class="php-email-form">
+                    <div class="row gy-4">
+    
+                    <div class="col-md-6">
+                        <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+                    </div>
+    
+                    <div class="col-md-6 ">
+                        <input type="email" class="form-control" name="email" placeholder="Your Email" required>
+                    </div>
+    
+                    <div class="col-md-12">
+                        <input type="text" class="form-control" name="subject" placeholder="Subject" required>
+                    </div>
+    
+                    <div class="col-md-12">
+                        <textarea class="form-control" name="message" rows="6" placeholder="Message" required></textarea>
+                    </div>
+    
+                    <div class="col-md-12 text-center">
+                        <div class="loading">Loading</div>
+                        <div class="error-message"></div>
+                        <div class="sent-message">Your message has been sent. Thank you!</div>
+                        <button type="submit">Send Message</button>
+                    </div>
+                    </div>
+                </form>
+                </div>
+            </div>
+            </div>
+        </section><!-- End Contact Section -->
     </body>
     </html>
+
+
 
 ### process.html
 
@@ -1123,158 +1354,295 @@ The following HTML represents the **process.html** file.
     <!DOCTYPE html>
     <html xmlns:th="http://www.thymeleaf.org">
     <head>
-     <meta charset="utf-8" />
-     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-     <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-     <link rel="stylesheet" th:href="|https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css|"/>
-     <script th:src="|https://code.jquery.com/jquery-1.12.4.min.js|"></script>
-     <script th:src="|https://code.jquery.com/ui/1.11.4/jquery-ui.min.js|"></script>
-     <script src="../public/js/message.js" th:src="@{/js/message.js}"></script>
+        <link
+        rel="icon"
+        href="../public/images/favicon-16x16.png"
+        th:href="@{/images/favicon-16x16.png}"
+        />
 
-     <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
-     <link rel="icon" href="../public/images/favicon.ico" th:href="@{/images/favicon.ico}" />
+        <link
+        rel="apple-touch-icon"
+        href="../public/images/apple-touch-icon.png"
+        th:href="@{/images/apple-touch-icon.png}"
+        />
 
-     <title>AWS Photo Analyzer</title>
+        <script th:src="|https://code.jquery.com/jquery-1.12.4.min.js|"></script>
+        <script
+        th:src="|https://code.jquery.com/ui/1.11.4/jquery-ui.min.js|"
+        ></script>
+        <script src="../public/js/message.js" th:src="@{/js/message.js}"></script>
 
-     <script>
+        <link
+        rel="stylesheet"
+        href="../public/css/styles.css"
+        th:href="@{/css/styles.css}"
+        />
+        <link
+        rel="icon"
+        href="../public/images/favicon.ico"
+        th:href="@{/images/favicon.ico}"
+        />
+
+        <link
+        href="../public/css/style.css"
+        rel="stylesheet"
+        th:href="@{/css/style.css}"
+        />
+        <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+        crossorigin
+        />
+
+        <title>AWS Photo Analyzer</title>
+
+        <script>
         function myFunction() {
-            alert("The form was submitted");
+            alert("Image Uploaded to Database");
         }
-     </script>
-
+        </script>
     </head>
 
     <body>
-    <header th:replace="layout :: site-header"/>
+        <header th:replace="layout :: site-header" />
+        <section id="hero" class="hero d-flex align-items-center">
+        <div class="container">
+            <h2>AWS Photo Analyzer Application</h2>
+            <p>
+            You can generate a report that analyzes the images in the S3 bucket.
+            You can send the report to the following email address.
+            </p>
+            <label for="email">Email address:</label><br />
+            <input type="text" id="email" name="email" value="" /><br />
 
-    <div class="container">
+            <div>
+            <br />
 
-    <h2>AWS Photo Analyzer application</h2>
-    <p>You can generate a report that analyzes the images in the Amazon S3 bucket. You can send the report to the following email address. </p>
-    <label for="email">Email address:</label><br>
-    <input type="text" id="email" name="email" value=""><br>
-
-    <div>
-        <br>
-        <p>Choose the button to obtain a report.</p>
-        <button onclick="ProcessImages()">Analyze Photos</button>
-    </div>
-    </div>
+            <p>Click the following button to obtain a report</p>
+            <button onclick="ProcessImages()">Analyze Photos</button>
+            </div>
+        </div>
+        </section>
     </body>
     </html>
+
 
 ### upload.html
 
 The following HTML represents the **upload.html** file.
 
     <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <script th:src="|https://code.jquery.com/jquery-1.12.4.min.js|"></script>
-    <script th:src="|https://code.jquery.com/ui/1.11.4/jquery-ui.min.js|"></script>
-    <script th:src="|https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js|"></script>
-    <script src="../public/js/items.js" th:src="@{/js/items.js}"></script>
+        <link
+        rel="icon"
+        href="../public/images/favicon-16x16.png"
+        th:href="@{/images/favicon-16x16.png}"
+        />
 
-    <link rel="stylesheet" th:href="|https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css|"/>
-    <link rel="stylesheet" th:href="|https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.css|"/>
-    <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
-    <link rel="icon" href="../public/images/favicon.ico" th:href="@{/images/favicon.ico}" />
+        <link
+        rel="apple-touch-icon"
+        href="../public/images/apple-touch-icon.png"
+        th:href="@{/images/apple-touch-icon.png}"
+        />
 
+        <script th:src="|https://code.jquery.com/jquery-1.12.4.min.js|"></script>
+        <script
+        th:src="|https://code.jquery.com/ui/1.11.4/jquery-ui.min.js|"
+        ></script>
+        <script
+        th:src="|https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js|"
+        ></script>
+        <script src="../public/js/items.js" th:src="@{/js/items.js}"></script>
 
-    <title>AWS Photo Analyzer</title>
+        <link
+        rel="stylesheet"
+        th:href="|https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.css|"
+        />
+        <link
+        rel="stylesheet"
+        href="../public/css/styles.css"
+        th:href="@{/css/styles.css}"
+        />
+        <link
+        rel="icon"
+        href="../public/images/favicon.ico"
+        th:href="@{/images/favicon.ico}"
+        />
+        <link
+        href="../public/css/style.css"
+        rel="stylesheet"
+        th:href="@{/css/style.css}"
+        />
+        <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+        crossorigin="anonymous"
+        />
 
-    <script>
+        <title>AWS Photo Analyzer</title>
+
+        <script>
         function myFunction() {
-            alert("The form was submitted");
+            alert("Image Was uploaded to Database");
         }
-    </script>
+        </script>
     </head>
 
     <body>
-    <header th:replace="layout :: site-header"/>
+        <header th:replace="layout :: site-header" />
 
-    <div class="container">
-     <h2>AWS Photo Analyzer application</h2>
-     <p>Upload images to an Amazon S3 bucket. Each image will be analyzed!</p>
+        <section id="hero" class="hero d-flex align-items-center">
+        <div class="container">
+            <h2 class="fs-5">AWS Photo Analyzer Application</h2>
+            <p class="fs-4">
+            Upload images to an S3 Bucket. Each image will be analysed!
+            </p>
 
-     <form method="POST" onsubmit="myFunction()" action="/upload" enctype="multipart/form-data">
-      <input type="file" name="file" /><br/><br/>
-      <input type="submit" value="Submit" />
-     </form>
-    <div>
-    <br>
+            <form
+            method="POST"
+            onsubmit="myFunction()"
+            action="/upload"
+            enctype="multipart/form-data"
+            >
+            <input type="file" name="file" /><br /><br />
+            <input type="submit" value="Submit" />
+            </form>
 
-    <p>Choose the following button to determine the number of images in the bucket.</p>
+            <div>
+            <br />
 
-    <button onclick="getImages()">Get Images</button>
-    <table id="myTable" class="display" style="width:100%">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Owner</th>
-            <th>Date</th>
-            <th>Size</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>No Data</td>
-            <td>No Data</td>
-            <td>No Data </td>
-            <td>No Data</td>
-        </tr>
-        </tbody>
-        <tfoot>
-        <tr>
-            <th>Name</th>
-            <th>Owner</th>
-            <th>Date</th>
-            <th>Size</th>
-        </tr>
-        </tfoot>
-        <div id="success3"></div>
-    </table>
-    </div>
-    </div>
+            <p>
+                Click the following button to determine the number of images in the
+                bucket
+            </p>
+
+            <button onclick="getImages()">Get Images</button>
+            <table
+                id="myTable"
+                class="table table-hover table-sm"
+                style="width: 100%"
+            >
+                <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Owner</th>
+                    <th>Date</th>
+                    <th>Size</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>No Data</td>
+                    <td>No Data</td>
+                    <td>No Data</td>
+                    <td>No Data</td>
+                </tr>
+                </tbody>
+                <!-- <tfoot>
+            <tr>
+                <th>Name</th>
+                <th>Owner</th>
+                <th>Date</th>
+                <th>Size</th>
+            </tr>
+            </tfoot> -->
+                <div id="success3"></div>
+            </table>
+            </div>
+        </div>
+        </section>
     </body>
     </html>
+
 
 ### layout.html
 
 The following HTML represents the **layout.html** file for the application's menu.
 
-     <!DOCTYPE html>
-      <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-     <head th:fragment="site-head">
-      <meta charset="UTF-8" />
-      <link rel="icon" href="../public/images/favicon.ico" th:href="@{/images/favicon.ico}" />
-      <script th:src="|https://code.jquery.com/jquery-1.12.4.min.js|"></script>
-       <meta th:include="this :: head" th:remove="tag"/>
-      </head>
-      <body>
-      <!-- th:hef calls a controller method - which returns the view -->
-      <header th:fragment="site-header">
-      <a href="index.html" th:href="@{/}"><img src="../public/images/site-logo.png" th:src="@{/images/site-logo.png}" /></a>
-      <a href="#" style="color: white" th:href="@{/}">Home</a>
-      <a href="#" style="color: white" th:href="@{/photo}">Upload Photos</a>
-      <a href="#"  style="color: white" th:href="@{/process}">Analyze Photos</a>
-      <div id="logged-in-info">
+    <!DOCTYPE html>
+    <html
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+    >
+    <head th:fragment="site-head">
+        <meta charset="UTF-8" />
+        <link
+        rel="icon"
+        href="../public/images/favicon-16x16.png"
+        th:href="@{/images/favicon-16x16.png}"
+        />
 
-        <form method="post" th:action="@{/logout}">
-            <input type="submit"  value="Logout"/>
-        </form>
-         </div>
+        <link
+        rel="apple-touch-icon"
+        href="../public/images/apple-touch-icon.png"
+        th:href="@{/images/apple-touch-icon.png}"
+        />
+
+        <script th:src="|https://code.jquery.com/jquery-1.12.4.min.js|"></script>
+        <meta th:include="this :: head" th:remove="tag" />
+        <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+        crossorigin="anonymous"
+        />
+
+        <link
+        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+        rel="stylesheet"
+        />
+
+        <link
+        href="../public/css/style.css"
+        rel="stylesheet"
+        th:href="@{/css/style.css}"
+        />
+    </head>
+    <body>
+        <!-- th:hef calls a controller method - which returns the view -->
+
+        <header th:fragment="site-header" id="header" class="header fixed-top">
+        <div
+            class="container-fluid container-xl d-flex align-items-center justify-content-between"
+        >
+            <a href="#" th:href="@{/}" class="logo d-flex align-items-center">
+            <img src="images/logo.png" alt="Logo" />
+            <span class="text-decoration-none">AI Portal</span>
+            </a>
+
+            <nav id="navbar" class="navbar">
+            <ul>
+                <li><a class="nav-link" href="#" th:href="@{/photo}">Upload Photo</a></li>
+                <li><a class="nav-link" href="#" th:href="@{/}">Home</a></li>
+                <li><a class="nav-link" href="#" th:href="@{/process}">Analyze Photo</a></li>
+                <li><a class="getstarted scrollto" href="#start">Get Started</a></li>
+            </ul>
+            <i class="bi bi-list mobile-nav-toggle"></i>
+            </nav>
+            <!-- .navbar -->
+        </div>
         </header>
-        <h1>Welcome</h1>
-        <body>
-        <p>Welcome to  AWS Photo Analyzer.</p>
-        </body>
-        </html>
+        <!-- End Header -->
+
+        <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+        crossorigin="anonymous"
+        ></script>
+    </body>
+    </html>
+
 
 ## Create script files
 
@@ -1363,7 +1731,7 @@ The following JavaScript represents the **message.js** file. The **ProcessImages
 
 ## Package the project
 
-Package up the project into a .jar (JAR) file that you can deploy to AWS Elastic Beanstalk by using the following Maven command.
+Package up the project into a .jar (JAR) file that you can deploy to AWS Elastic Beanstalk or local system by using the following Maven command.
 
     mvn package
 
